@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/bwmarrin/discordgo"
 	"github.com/BurntSushi/toml"
+	"github.com/bwmarrin/discordgo"
 	"github.com/caylorme/pubgopgg"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
-	"strconv"
 )
 
 var trigger = "!"
@@ -96,24 +96,27 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		params := strings.Split(m.Content, " ")
 		switch command := strings.TrimPrefix(strings.Split(m.Content, " ")[0], trigger); command {
 		case "rank":
-			if len(params) < 5 { return }
+			if len(params) < 5 {
+				return
+			}
 			pubgopgg, _ := pubgopgg.New()
-			Player, err := pubgopgg.GetPlayer(params[1],params[2],params[3],params[4])
+			Player, err := pubgopgg.GetPlayer(params[1], params[2], params[3], params[4])
 			if err != nil {
-					_, _ = s.ChannelMessageSend(c.ID, err.Error())
-				} else {
-					_, _ = s.ChannelMessageSend(c.ID, Player.Username + " is ranked " + strconv.Itoa(Player.Ranks.Rating))
-				}
+				_, _ = s.ChannelMessageSend(c.ID, err.Error())
+			} else {
+				_, _ = s.ChannelMessageSend(c.ID, Player.Username+" is ranked "+strconv.Itoa(Player.Ranks.Rating))
+			}
 		case "stats":
-			if len(params) < 5 { return }
+			if len(params) < 5 {
+				return
+			}
 			pubgopgg, _ := pubgopgg.New()
-			Player, err := pubgopgg.GetPlayer(params[1],params[2],params[3],params[4])
+			Player, err := pubgopgg.GetPlayer(params[1], params[2], params[3], params[4])
 			if err != nil {
-					_, _ = s.ChannelMessageSend(c.ID, err.Error())
-				} else {
-					_, _ = s.ChannelMessageSend(c.ID, "```Username: "+ Player.Username + "  Rank: " + strconv.Itoa(Player.Ranks.Rating) + "\nRating: " + strconv.Itoa(Player.Stats.Rating) + " Matches: " + strconv.Itoa(Player.Stats.Matches_cnt) + " Wins: " + strconv.Itoa(Player.Stats.Win_matches_cnt) + " Top Tens: " + strconv.Itoa(Player.Stats.Topten_matches_cnt) + "\nKills: " + strconv.Itoa(Player.Stats.Kills_sum) + " Most Kills: " + strconv.Itoa(Player.Stats.Kills_max) + " Assists: " + strconv.Itoa(Player.Stats.Assists_sum) + " Headshots: " + strconv.Itoa(Player.Stats.Headshot_kills_sum) + " Deaths: " + strconv.Itoa(Player.Stats.Deaths_sum) + " Longest Kill: " + strconv.Itoa(Player.Stats.Longest_kill_max) + " Average Rank: " + strconv.FormatFloat(Player.Stats.Rank_avg, 'f', -1, 64) + " ADR: " + strconv.FormatFloat(Player.Stats.Damage_dealt_avg, 'f', -1, 64) + " Survival Average: " + strconv.FormatFloat(Player.Stats.Time_survived_avg, 'f', -1, 64) + "```")
-				}
-			
+				_, _ = s.ChannelMessageSend(c.ID, err.Error())
+			} else {
+				_, _ = s.ChannelMessageSend(c.ID, "```Username: "+Player.Username+"  Rank: "+strconv.Itoa(Player.Ranks.Rating)+"\nRating: "+strconv.Itoa(Player.Stats.Rating)+" Matches: "+strconv.Itoa(Player.Stats.Matches_cnt)+" Wins: "+strconv.Itoa(Player.Stats.Win_matches_cnt)+" Top Tens: "+strconv.Itoa(Player.Stats.Topten_matches_cnt)+"\nKills: "+strconv.Itoa(Player.Stats.Kills_sum)+" Most Kills: "+strconv.Itoa(Player.Stats.Kills_max)+" Assists: "+strconv.Itoa(Player.Stats.Assists_sum)+" Headshots: "+strconv.Itoa(Player.Stats.Headshot_kills_sum)+" Deaths: "+strconv.Itoa(Player.Stats.Deaths_sum)+" Longest Kill: "+strconv.Itoa(Player.Stats.Longest_kill_max)+" Average Rank: "+strconv.FormatFloat(Player.Stats.Rank_avg, 'f', -1, 64)+" ADR: "+strconv.FormatFloat(Player.Stats.Damage_dealt_avg, 'f', -1, 64)+" Survival Average: "+strconv.FormatFloat(Player.Stats.Time_survived_avg, 'f', -1, 64)+"```")
+			}
 
 		default:
 			_, _ = s.ChannelMessageSend(c.ID, command)
