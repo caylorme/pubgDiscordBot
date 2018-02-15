@@ -12,15 +12,19 @@ import (
 	"syscall"
 )
 
-var trigger = "!"
+var config = Config{
+	Trigger: "!",
+	Status:  "Rolyac",
+}
 
 type Config struct {
-	Token string
+	Token   string
+	Status  string
+	Trigger string
 }
 
 func main() {
 	fmt.Println("PUBG Discord Bot")
-	config := Config{}
 	_, err := toml.DecodeFile("./config.toml", &config)
 	if err != nil {
 		fmt.Println("Error decoding toml config", err.Error())
@@ -57,7 +61,7 @@ func main() {
 func ready(s *discordgo.Session, event *discordgo.Ready) {
 
 	// Set the playing status.
-	s.UpdateStatus(0, "Rolyac")
+	s.UpdateStatus(0, config.Status)
 
 }
 
@@ -85,7 +89,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if strings.HasPrefix(m.Content, trigger) {
+	if strings.HasPrefix(m.Content, config.Trigger) {
 
 		// Find the channel that the message came from.
 		c, err := s.State.Channel(m.ChannelID)
@@ -94,7 +98,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 		params := strings.Split(m.Content, " ")
-		switch command := strings.TrimPrefix(strings.Split(m.Content, " ")[0], trigger); command {
+		switch command := strings.TrimPrefix(strings.Split(m.Content, " ")[0], config.Trigger); command {
 		case "rank":
 			if len(params) < 5 {
 				return

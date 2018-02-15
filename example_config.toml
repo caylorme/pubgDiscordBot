@@ -1,1 +1,3 @@
-Token = "INSERT_TOKEN_HERE"
+Token 	= "INSERT_TOKEN_HERE"
+Trigger = "!"
+Status 	= "Rolyac"
